@@ -1,9 +1,9 @@
-package main
+package lifts
 
 import "testing"
 
 func TestCallLift(t *testing.T) {
-	cases := []int {
+	cases := []int{
 		1,
 	}
 
