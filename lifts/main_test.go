@@ -14,3 +14,11 @@ func TestCallLift(t *testing.T) {
 		}
 	}
 }
+
+func TestNewLiftScheduler(t *testing.T) {
+	liftScheduler := NewLiftScheduler()
+	lifts := liftScheduler.Lifts
+	if len(lifts) != 4 {
+		t.Errorf("Instantiated using NewLiftScheduler but length of lifts was %d, expected %d", len(lifts), 4)
+	}
+}
