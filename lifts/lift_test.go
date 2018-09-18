@@ -16,3 +16,11 @@ func TestCreateLift(t *testing.T) {
 		}
 	}
 }
+
+func TestGoToFloor(t *testing.T) {
+	lift := Lift{0}
+	lift.GoToFloor(1)
+	if lift.Floor != 1 {
+		t.Errorf("Sent lift to floor %d, was actually on %d", 1, lift.Floor)
+	}
+}
