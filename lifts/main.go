@@ -17,3 +17,8 @@ func NewLiftScheduler() liftScheduler {
 func CallLift() int {
 	return 1
 }
+
+// RegisterLift adds a Lift to the system, available for scehduling.
+func (ls liftScheduler) RegisterLift(lift Lift) {
+	ls.Lifts = append(ls.Lifts, lift)
+}

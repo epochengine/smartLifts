@@ -22,3 +22,13 @@ func TestNewLiftScheduler(t *testing.T) {
 		t.Errorf("Instantiated using NewLiftScheduler but length of lifts was %d, expected %d", len(lifts), 4)
 	}
 }
+
+func TestRegisterLift(t *testing.T) {
+	liftScheduler := NewLiftScheduler()
+	lift := Lift{0}
+	liftScheduler.RegisterLift(lift)
+	lifts := liftScheduler.Lifts
+	if lifts[0] != lift {
+		t.Error("Called RegisterLift but lift was not first result from Lifts()")
+	}
+}
