@@ -2,13 +2,13 @@ package lifts
 
 // LiftScheduler schedules a set of Lifts.
 type liftScheduler struct {
-	Lifts []Lift
+	Lifts map[Lift]struct{}
 }
 
 // NewLiftScheduler creates a liftScheduler.
-// It will have an empty but allocated slice of Lifts.
+// It will have an empty set of Lifts.
 func NewLiftScheduler() liftScheduler {
-	lifts := make([]Lift, 4)
+	lifts := make(map[Lift]struct{})
 	return liftScheduler{lifts}
 }
 
@@ -20,5 +20,5 @@ func CallLift() int {
 
 // RegisterLift adds a Lift to the system, available for scehduling.
 func (ls liftScheduler) RegisterLift(lift Lift) {
-	ls.Lifts = append(ls.Lifts, lift)
+	ls.Lifts[lift] = struct{}{}
 }
