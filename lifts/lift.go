@@ -15,7 +15,7 @@ type lift struct {
 
 // NewLift creates a Lift starting on the given floor.
 func NewLift(startFloor int) Lift {
-	return &lift{startFloor, nil}
+	return &lift{floor: startFloor}
 }
 
 // GoToFloor sends this lift to the given floor.
