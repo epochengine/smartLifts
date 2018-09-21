@@ -17,7 +17,7 @@ func TestCallLift(t *testing.T) {
 
 func TestRegisterLift(t *testing.T) {
 	liftScheduler := NewLiftScheduler()
-	lift := Lift{0}
+	lift := NewLift(0)
 	liftScheduler.RegisterLift(lift)
 	lifts := liftScheduler.Lifts
 	_, ok := lifts[lift]

@@ -9,8 +9,8 @@ func TestCreateLift(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		lift := Lift{c}
-		floor := lift.Floor
+		lift := NewLift(c)
+		floor := lift.Floor()
 		if floor != c {
 			t.Errorf("Created lift on floor %d, got floor %d", c, floor)
 		}
@@ -18,9 +18,20 @@ func TestCreateLift(t *testing.T) {
 }
 
 func TestGoToFloor(t *testing.T) {
-	lift := Lift{0}
+	lift := NewLift(0)
 	lift.GoToFloor(1)
-	if lift.Floor != 1 {
-		t.Errorf("Sent lift to floor %d, was actually on %d", 1, lift.Floor)
+	if lift.Floor() != 1 {
+		t.Errorf("Sent lift to floor %d, was actually on %d", 1, lift.Floor())
+	}
+}
+
+func TestLiftReportsFloor(t *testing.T) {
+	ch := make(chan (int))
+	lift := NewLift(0)
+	lift.ReportOn(ch)
+	go lift.GoToFloor(1)
+	report := <-ch
+	if report != 1 {
+		t.Errorf("Expected lift to report at floor %d, got %d", 1, report)
 	}
 }
