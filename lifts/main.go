@@ -1,5 +1,7 @@
 package lifts
 
+import "errors"
+
 // LiftScheduler schedules a set of Lifts.
 type liftScheduler struct {
 	Lifts map[Lift]struct{}
@@ -13,9 +15,14 @@ func NewLiftScheduler() liftScheduler {
 }
 
 // CallLift requests a lift.
-// It returns the lift number that has been assigned.
-func CallLift() int {
-	return 1
+// It returns the lift that has been assigned.
+func (ls liftScheduler) CallLift(floor int) (l Lift, err error) {
+	for lift := range ls.Lifts {
+		lift.GoToFloor(floor)
+		return lift, nil
+	}
+
+	return nil, errors.New("no lift available to call")
 }
 
 // RegisterLift adds a Lift to the system, available for scehduling.
