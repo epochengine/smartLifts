@@ -10,7 +10,7 @@ func TestCallLift(t *testing.T) {
 
 	for _, c := range cases {
 		liftScheduler := NewLiftScheduler()
-		liftScheduler.RegisterLift(NewLift(0))
+		liftScheduler.RegisterLift(NewLift(0, 0))
 		lift, err := liftScheduler.CallLift(c)
 		if lift.Floor() != c {
 			t.Errorf("Called lift to floor %d, instead was at %d", c, lift.Floor())
@@ -31,7 +31,7 @@ func TestCallLiftError(t *testing.T) {
 
 func TestRegisterLift(t *testing.T) {
 	liftScheduler := NewLiftScheduler()
-	lift := NewLift(0)
+	lift := NewLift(0, 0)
 	liftScheduler.RegisterLift(lift)
 	lifts := liftScheduler.Lifts
 	_, ok := lifts[lift]
