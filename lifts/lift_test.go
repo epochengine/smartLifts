@@ -85,3 +85,34 @@ func TestLiftMovementSpeed(t *testing.T) {
 		}
 	}
 }
+
+func TestDirection(t *testing.T) {
+	cases := []struct {
+		start       int
+		destination int
+		direction   Direction
+	}{
+		{0, 2, Up},
+		{2, 0, Down},
+		{0, 0, Still},
+	}
+
+	for _, c := range cases {
+		lift := NewLift(c.start, 10*time.Millisecond)
+		lift.GoToFloor(c.destination)
+		if lift.Direction() != c.direction {
+			t.Errorf("Sent lift from %d to %d and expected direction %s, but got %s", c.start, c.destination, c.direction.String(), lift.Direction())
+		}
+	}
+}
+
+func TestDirectionAfterMovement(t *testing.T) {
+	lift := NewLift(0, 10*time.Millisecond)
+	ch := make(chan int)
+	lift.ReportOn(ch)
+	lift.GoToFloor(1)
+	<-ch
+	if lift.Direction() != Still {
+		t.Errorf("Expected lift to be Still after moving floors, but instead its direction was %s", lift.Direction())
+	}
+}

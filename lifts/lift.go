@@ -10,6 +10,7 @@ type Lift interface {
 	Floor() int
 	Destination() int
 	ReportOn(chan int)
+	Direction() Direction
 }
 
 // lift represents the internal state of a Lift.
@@ -61,4 +62,16 @@ func (l lift) Destination() int {
 // ReportOn instructs this lift to report its movements on the given channel.
 func (l *lift) ReportOn(ch chan int) {
 	l.ch = ch
+}
+
+// Direction
+func (l lift) Direction() Direction {
+	switch {
+	case l.destination < l.floor:
+		return Down
+	case l.destination > l.floor:
+		return Up
+	default:
+		return Still
+	}
 }
