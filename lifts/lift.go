@@ -1,7 +1,6 @@
 package lifts
 
 import (
-	"math"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type Lift interface {
 	ReportOn(chan int)
 }
 
-// lift respsents the internal state of a Lift.
+// lift represents the internal state of a Lift.
 type lift struct {
 	floor       int
 	speed       time.Duration
@@ -29,11 +28,23 @@ func NewLift(startFloor int, speed time.Duration) Lift {
 // GoToFloor sends this lift to the given floor.
 func (l *lift) GoToFloor(destination int) {
 	l.destination = destination
-	floors := int(math.Abs(float64(destination - l.floor)))
-	time.Sleep(time.Duration(floors) * l.speed)
-	l.floor = destination
-	if l.ch != nil {
-		l.ch <- destination
+	go l.travel()
+}
+
+func (l *lift) travel() {
+	for l.destination != l.floor {
+		var diff int
+		if l.destination > l.floor {
+			diff = 1
+		} else {
+			diff = -1
+		}
+
+		time.Sleep(l.speed)
+		l.floor = l.floor + diff
+		if l.ch != nil {
+			l.ch <- l.floor
+		}
 	}
 }
 

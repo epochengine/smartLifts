@@ -10,8 +10,15 @@ func TestCallLift(t *testing.T) {
 
 	for _, c := range cases {
 		liftScheduler := NewLiftScheduler()
-		liftScheduler.RegisterLift(NewLift(0, 0))
+		lift := NewLift(0, 0)
+		ch := make(chan int)
+		lift.ReportOn(ch)
+		liftScheduler.RegisterLift(lift)
 		lift, err := liftScheduler.CallLift(c)
+		for i := 1; i <= c; i++ {
+			<-ch
+		}
+
 		if lift.Floor() != c {
 			t.Errorf("Called lift to floor %d, instead was at %d", c, lift.Floor())
 		}

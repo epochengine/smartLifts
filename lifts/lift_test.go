@@ -21,10 +21,20 @@ func TestCreateLift(t *testing.T) {
 }
 
 func TestGoToFloor(t *testing.T) {
-	lift := NewLift(0, 50*time.Millisecond)
-	lift.GoToFloor(1)
-	if lift.Destination() != 1 {
-		t.Errorf("Sent lift to floor %d, but its destination was actually %d", 1, lift.Destination())
+	cases := []struct {
+		start       int
+		destination int
+	}{
+		{0, 2},
+		{3, 1},
+	}
+
+	for _, c := range cases {
+		lift := NewLift(c.start, 50*time.Millisecond)
+		lift.GoToFloor(c.destination)
+		if lift.Destination() != c.destination {
+			t.Errorf("Sent lift to floor %d, but its destination was actually %d", c.destination, lift.Destination())
+		}
 	}
 }
 
@@ -39,9 +49,12 @@ func TestLiftReportsFloor(t *testing.T) {
 		lift := NewLift(0, 20*time.Millisecond)
 		lift.ReportOn(ch)
 		go lift.GoToFloor(c)
-		report := <-ch
-		if report != c {
-			t.Errorf("Expected lift to report at floor %d, got %d", c, report)
+
+		for i := 1; i <= c; i++ {
+			report := <-ch
+			if report != i {
+				t.Errorf("Expected lift to report at floor %d, got %d", i, report)
+			}
 		}
 	}
 }
@@ -61,7 +74,10 @@ func TestLiftMovementSpeed(t *testing.T) {
 		lift.ReportOn(ch)
 		start := time.Now()
 		go lift.GoToFloor(c.floors)
-		<-ch
+		for i := 1; i <= c.floors; i++ {
+			<-ch
+		}
+
 		duration := time.Since(start)
 		expected := c.speed * time.Duration(c.floors)
 		if duration < expected {
