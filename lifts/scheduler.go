@@ -18,7 +18,7 @@ func NewLiftScheduler() liftScheduler {
 // It returns the lift that has been assigned.
 func (ls liftScheduler) CallLift(floor int) (l Lift, err error) {
 	for lift := range ls.Lifts {
-		lift.GoToFloor(floor)
+		lift.AddDestination(floor)
 		return lift, nil
 	}
 

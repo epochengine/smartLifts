@@ -1,24 +1,25 @@
 package lifts
 
 import (
+	"sort"
 	"time"
 )
 
 // Lift represents a lift and exposes functions to control it.
 type Lift interface {
-	GoToFloor(floor int)
+	AddDestination(floor int)
 	Floor() int
-	Destination() int
+	Destinations() []int
 	ReportOn(chan int)
 	Direction() Direction
 }
 
 // lift represents the internal state of a Lift.
 type lift struct {
-	floor       int
-	speed       time.Duration
-	destination int
-	ch          chan int
+	floor        int
+	speed        time.Duration
+	destinations sort.IntSlice
+	ch           chan int
 }
 
 // NewLift creates a Lift starting on the given floor.
@@ -26,16 +27,30 @@ func NewLift(startFloor int, speed time.Duration) Lift {
 	return &lift{floor: startFloor, speed: speed}
 }
 
-// GoToFloor sends this lift to the given floor.
-func (l *lift) GoToFloor(destination int) {
-	l.destination = destination
-	go l.travel()
+// AddDestination adds the given destination to a lift.
+func (l *lift) AddDestination(destination int) {
+	travel := l.Direction() == Still
+	insert := sort.SearchInts(l.destinations, destination)
+	if insert == len(l.destinations) {
+		l.destinations = append(l.destinations, destination)
+	} else if l.destinations[insert] != destination {
+		temp := make([]int, len(l.destinations)+1)
+		copy(temp, l.destinations[:insert])
+		temp[insert] = destination
+		copy(temp[insert+1:], l.destinations[insert:])
+		l.destinations = temp
+	}
+
+	if travel {
+		go l.travel()
+	}
 }
 
 func (l *lift) travel() {
-	for l.destination != l.floor {
+	for len(l.destinations) != 0 {
 		var diff int
-		if l.destination > l.floor {
+		nextStop := l.destinations[0]
+		if nextStop > l.floor {
 			diff = 1
 		} else {
 			diff = -1
@@ -43,6 +58,9 @@ func (l *lift) travel() {
 
 		time.Sleep(l.speed)
 		l.floor = l.floor + diff
+		if l.floor == nextStop {
+			l.destinations = l.destinations[1:]
+		}
 		if l.ch != nil {
 			l.ch <- l.floor
 		}
@@ -54,9 +72,9 @@ func (l lift) Floor() int {
 	return l.floor
 }
 
-// Destination returns the current destination of this lift.
-func (l lift) Destination() int {
-	return l.destination
+// Destination returns the current destination list of this lift.
+func (l lift) Destinations() []int {
+	return l.destinations
 }
 
 // ReportOn instructs this lift to report its movements on the given channel.
@@ -64,12 +82,14 @@ func (l *lift) ReportOn(ch chan int) {
 	l.ch = ch
 }
 
-// Direction
+// Direction returns the current movement direction of a lift.
 func (l lift) Direction() Direction {
 	switch {
-	case l.destination < l.floor:
+	case len(l.destinations) == 0:
+		return Still
+	case l.destinations[0] < l.floor:
 		return Down
-	case l.destination > l.floor:
+	case l.destinations[0] > l.floor:
 		return Up
 	default:
 		return Still
