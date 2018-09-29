@@ -1,6 +1,6 @@
 package lifts
 
-// Direction represents which way the lift is travelling.
+// Direction represents a direction of travel (including none).
 type Direction int
 
 // A Direction can be Up, Down or Still.

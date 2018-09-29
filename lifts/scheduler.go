@@ -25,7 +25,7 @@ func (ls liftScheduler) CallLift(floor int) (l Lift, err error) {
 	return nil, errors.New("no lift available to call")
 }
 
-// RegisterLift adds a Lift to the system, available for scehduling.
+// RegisterLift adds a Lift to the system, available for scheduling.
 func (ls liftScheduler) RegisterLift(lift Lift) {
 	ls.Lifts[lift] = struct{}{}
 }

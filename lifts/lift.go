@@ -67,17 +67,17 @@ func (l *lift) travel() {
 	}
 }
 
-// Floor returns the current floor of this lift.
+// Floor returns the current floor of a lift.
 func (l lift) Floor() int {
 	return l.floor
 }
 
-// Destination returns the current destination list of this lift.
+// Destination returns the current destination list of a lift.
 func (l lift) Destinations() []int {
 	return l.destinations
 }
 
-// ReportOn instructs this lift to report its movements on the given channel.
+// ReportOn instructs a lift to report its movements on the given channel.
 func (l *lift) ReportOn(ch chan int) {
 	l.ch = ch
 }
