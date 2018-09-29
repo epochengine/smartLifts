@@ -116,6 +116,17 @@ func TestAddDestinationDuplicate(t *testing.T) {
 	}
 }
 
+func TestAddDestinationCurrentFloorMoving(t *testing.T) {
+	lift := NewLift(0, 1*time.Second)
+	lift.AddDestination(1)
+	lift.AddDestination(0)
+
+	if len(lift.Destinations()) != 1 || lift.Destinations()[0] != 1 {
+		t.Errorf("Added the current (just departed) floor as a destination, and it appeared in the destinations list "+
+			"when it shouldn't. Destinations: %v", lift.Destinations())
+	}
+}
+
 func TestDirection(t *testing.T) {
 	cases := []struct {
 		start       int

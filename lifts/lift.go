@@ -28,7 +28,14 @@ func NewLift(startFloor int, speed time.Duration) Lift {
 }
 
 // AddDestination adds the given destination to a lift.
+// Duplicate destinations will be silently discarded as the lift is already
+// going there. If the given destination is the current floor, it will be
+// ignored.
 func (l *lift) AddDestination(destination int) {
+	if destination == l.floor {
+		return
+	}
+
 	travel := l.Direction() == Still
 	insert := sort.SearchInts(l.destinations, destination)
 	if insert == len(l.destinations) {
@@ -85,13 +92,11 @@ func (l *lift) ReportOn(ch chan int) {
 // Direction returns the current movement direction of a lift.
 func (l lift) Direction() Direction {
 	switch {
-	case len(l.destinations) == 0:
+	case len(l.destinations) == 0 || l.destinations[0] == l.floor:
 		return Still
 	case l.destinations[0] < l.floor:
 		return Down
-	case l.destinations[0] > l.floor:
-		return Up
 	default:
-		return Still
+		return Up
 	}
 }
