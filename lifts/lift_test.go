@@ -106,6 +106,16 @@ func TestAddDestination(t *testing.T) {
 	}
 }
 
+func TestAddDestinationDuplicate(t *testing.T) {
+	lift := NewLift(0, 1*time.Second)
+	lift.AddDestination(2)
+	lift.AddDestination(2)
+
+	if len(lift.Destinations()) != 1 || lift.Destinations()[0] != 2 {
+		t.Errorf("Added the same destination twice, expected only [2], but got %v", lift.Destinations())
+	}
+}
+
 func TestDirection(t *testing.T) {
 	cases := []struct {
 		start       int
@@ -122,6 +132,21 @@ func TestDirection(t *testing.T) {
 		lift.AddDestination(c.destination)
 		if lift.Direction() != c.direction {
 			t.Errorf("Sent lift from %d to %d and expected direction %s, but got %s", c.start, c.destination, c.direction.String(), lift.Direction())
+		}
+	}
+}
+
+func TestLiftIsStillByDefault(t *testing.T) {
+	cases := []int{
+		-1,
+		0,
+		2,
+	}
+
+	for _, c := range cases {
+		lift := NewLift(c, 0)
+		if lift.Direction() != Still {
+			t.Errorf("New lift created at floor %d should be still, but its direction was %s", c, lift.Direction())
 		}
 	}
 }
