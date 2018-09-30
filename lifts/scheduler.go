@@ -17,9 +17,18 @@ func NewLiftScheduler() liftScheduler {
 // CallLift requests a lift.
 // It returns the lift that has been assigned.
 func (ls liftScheduler) CallLift(floor int) (l Lift, err error) {
+	var bestLift Lift
 	for lift := range ls.Lifts {
-		lift.AddDestination(floor)
-		return lift, nil
+		if lift.Direction() == Still {
+			if bestLift == nil || lift.Floor()-floor < bestLift.Floor()-floor {
+				bestLift = lift
+			}
+		}
+	}
+
+	if bestLift != nil {
+		bestLift.AddDestination(floor)
+		return bestLift, nil
 	}
 
 	return nil, errors.New("no lift available to call")

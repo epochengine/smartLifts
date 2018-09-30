@@ -1,6 +1,9 @@
 package lifts
 
-import "testing"
+import (
+	"testing"
+	"time"
+)
 
 func TestCallLift(t *testing.T) {
 	cases := []int{
@@ -19,12 +22,33 @@ func TestCallLift(t *testing.T) {
 			<-ch
 		}
 
+		if err != nil {
+			t.Errorf("Called lift to floor %d when one was available, but got error: %s", c, err)
+			return
+		}
 		if lift.Floor() != c {
 			t.Errorf("Called lift to floor %d, instead was at %d", c, lift.Floor())
 		}
-		if err != nil {
-			t.Errorf("Called lift to floor %d when one was available, but got error: %s", c, err)
-		}
+	}
+}
+
+func TestCallLiftSchedulesNearLift(t *testing.T) {
+	liftScheduler := NewLiftScheduler()
+	movingLift := NewLift(0, 1*time.Second)
+	movingLift.AddDestination(10)
+	farLift := NewLift(4, 1*time.Second)
+	nearLift := NewLift(0, 1*time.Second)
+	liftScheduler.RegisterLift(movingLift)
+	liftScheduler.RegisterLift(farLift)
+	liftScheduler.RegisterLift(nearLift)
+	lift, err := liftScheduler.CallLift(1)
+
+	if err != nil {
+		t.Errorf("Expected the nearest lift to be scheduled, but instead got an error: %s", err)
+		return
+	}
+	if lift != nearLift {
+		t.Errorf("Expected the nearest lift to be scheduled, but instead got %v", lift)
 	}
 }
 
