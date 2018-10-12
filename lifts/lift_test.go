@@ -48,7 +48,7 @@ func TestLiftReportsFloor(t *testing.T) {
 	for _, c := range cases {
 		ch := make(chan int)
 		lift := NewLift(0, 20*time.Millisecond)
-		lift.ReportOn(ch)
+		lift.ReportFloorsOn(ch)
 		go lift.AddDestination(c)
 
 		for i := 1; i <= c; i++ {
@@ -72,7 +72,7 @@ func TestLiftMovementSpeed(t *testing.T) {
 	for _, c := range cases {
 		lift := NewLift(0, c.speed)
 		ch := make(chan int)
-		lift.ReportOn(ch)
+		lift.ReportFloorsOn(ch)
 		start := time.Now()
 		go lift.AddDestination(c.floors)
 		for i := 1; i <= c.floors; i++ {
@@ -182,7 +182,7 @@ func TestLiftIsStillByDefault(t *testing.T) {
 func TestDirectionAfterMovement(t *testing.T) {
 	lift := NewLift(0, 10*time.Millisecond)
 	ch := make(chan int)
-	lift.ReportOn(ch)
+	lift.ReportFloorsOn(ch)
 	lift.AddDestination(1)
 	<-ch
 	if lift.Direction() != Still {

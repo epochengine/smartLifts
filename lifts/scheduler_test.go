@@ -15,7 +15,7 @@ func TestCallLift(t *testing.T) {
 		liftScheduler := NewLiftScheduler()
 		lift := NewLift(0, 0)
 		ch := make(chan int)
-		lift.ReportOn(ch)
+		lift.ReportFloorsOn(ch)
 		liftScheduler.RegisterLift(lift)
 		lift, err := liftScheduler.CallLift(c, Down)
 		for i := 1; i <= c; i++ {
