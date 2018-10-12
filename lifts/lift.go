@@ -22,6 +22,7 @@ type lift struct {
 	destinations sort.IntSlice
 	ch           chan int
 	movementCh   chan Movement
+	travelling   bool
 }
 
 // NewLift creates a Lift starting on the given floor.
@@ -38,7 +39,6 @@ func (l *lift) AddDestination(destination int) {
 		return
 	}
 
-	travel := l.Direction() == Still
 	insert := sort.SearchInts(l.destinations, destination)
 	if insert == len(l.destinations) {
 		l.destinations = append(l.destinations, destination)
@@ -50,7 +50,8 @@ func (l *lift) AddDestination(destination int) {
 		l.destinations = temp
 	}
 
-	if travel {
+	if !l.travelling {
+		l.travelling = true
 		go l.travel()
 	}
 }

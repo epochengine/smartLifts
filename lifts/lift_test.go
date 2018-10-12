@@ -127,6 +127,23 @@ func TestAddDestinationCurrentFloorMoving(t *testing.T) {
 	}
 }
 
+func TestAddDestinationOnlyTravelsOnce(t *testing.T) {
+	lift := NewLift(0, 200*time.Millisecond)
+	ch := make(chan Movement)
+	lift.ReportMovementOn(ch)
+	lift.AddDestination(1)
+	<-ch
+	lift.AddDestination(2)
+	movement := <-ch
+	if movement != Stop {
+		t.Errorf("Expected second movement report to be Stop but got %s", movement)
+	}
+
+	if lift.Floor() != 2 {
+		t.Errorf("Expected lift to be on floor 2 but instead it was on %d", lift.Floor())
+	}
+}
+
 func TestDirection(t *testing.T) {
 	cases := []struct {
 		start       int
