@@ -11,6 +11,7 @@ type Lift interface {
 	Floor() int
 	Destinations() []int
 	ReportOn(chan int)
+	ReportMovementOn(chan Movement)
 	Direction() Direction
 }
 
@@ -20,6 +21,7 @@ type lift struct {
 	speed        time.Duration
 	destinations sort.IntSlice
 	ch           chan int
+	movementCh   chan Movement
 }
 
 // NewLift creates a Lift starting on the given floor.
@@ -54,6 +56,10 @@ func (l *lift) AddDestination(destination int) {
 }
 
 func (l *lift) travel() {
+	if l.movementCh != nil {
+		l.movementCh <- Start
+	}
+
 	for len(l.destinations) != 0 {
 		var diff int
 		nextStop := l.destinations[0]
@@ -72,6 +78,10 @@ func (l *lift) travel() {
 			l.ch <- l.floor
 		}
 	}
+
+	if l.movementCh != nil {
+		l.movementCh <- Stop
+	}
 }
 
 // Floor returns the current floor of a lift.
@@ -87,6 +97,12 @@ func (l lift) Destinations() []int {
 // ReportOn instructs a lift to report its movements on the given channel.
 func (l *lift) ReportOn(ch chan int) {
 	l.ch = ch
+}
+
+// ReportMovementOn instructs a lift to report its start/stops on the
+// given channel.
+func (l *lift) ReportMovementOn(ch chan Movement) {
+	l.movementCh = ch
 }
 
 // Direction returns the current movement direction of a lift.

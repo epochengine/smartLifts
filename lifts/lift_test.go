@@ -172,3 +172,28 @@ func TestDirectionAfterMovement(t *testing.T) {
 		t.Errorf("Expected lift to be Still after moving floors, but instead its direction was %s", lift.Direction())
 	}
 }
+
+func TestLiftReportsMovement(t *testing.T) {
+	cases := []struct {
+		iterations int
+		expected   Movement
+	}{
+		{1, Start},
+		{2, Stop},
+	}
+
+	for _, c := range cases {
+		lift := NewLift(0, 10*time.Millisecond)
+		ch := make(chan Movement)
+		lift.ReportMovementOn(ch)
+		lift.AddDestination(1)
+		var movement Movement
+		for i := 0; i < c.iterations; i++ {
+			movement = <-ch
+		}
+
+		if movement != c.expected {
+			t.Errorf("Expected lift to report it started moving, but instead got %s", movement)
+		}
+	}
+}
